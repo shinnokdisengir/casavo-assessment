@@ -1,16 +1,37 @@
-import React from "react";
-import { Route, useHistory } from "react-router-dom";
-import "./App.css";
-import DataProvider from "./core/Data";
+import React, { FunctionComponent, HTMLProps } from "react";
+import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
+import styled from "styled-components";
+import UserDetail from "./pages/UserDetail";
 import UserList from "./pages/UserList";
 
-function App() {
-  const history = useHistory();
-  return (
-    <DataProvider>
-      <Route component={UserList} />
-    </DataProvider>
-  );
-}
+interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 
-export default App;
+const App: FunctionComponent<Props> = ({ className }) => (
+  <div className={className}>
+    <Switch>
+      <Route exact path="/create/:id" component={UserDetail} />
+      <Route exact path="/edit/:id" component={UserDetail} />
+      <Route exact path="/" component={UserList} />
+      <Redirect
+        to={{
+          pathname: "/",
+        }}
+      />
+    </Switch>
+  </div>
+);
+
+const StyledApp = styled(App)`
+  padding: 8px 16px;
+  background-color: white;
+  margin: auto;
+  width: 300px;
+  height: 400px;
+  overflow-y: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+export default StyledApp;

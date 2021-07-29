@@ -1,19 +1,24 @@
 import { createBrowserHistory as createHistory } from "history";
-import React from "react";
+import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Route, Router } from "react-router-dom";
 import App from "./App";
-import "./index.css";
+import DataProvider from "./core/Data";
 import reportWebVitals from "./reportWebVitals";
+import "./GlobalStyles";
+import GlobalStyles from "./GlobalStyles";
 
 const history = createHistory();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Router history={history}>
-      <Route component={App} />
-    </Router>
-  </React.StrictMode>,
+  <StrictMode>
+    <GlobalStyles />
+    <DataProvider>
+      <Router history={history}>
+        <Route component={App} />
+      </Router>
+    </DataProvider>
+  </StrictMode>,
   document.getElementById("root")
 );
 

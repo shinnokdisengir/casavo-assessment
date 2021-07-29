@@ -41,10 +41,7 @@ const DataProvider: FunctionComponent = ({ children }) => {
   const [users, setUsers] = useState<Users>({});
 
   const checkUser = useCallback((name: string) => !!users[name], [users]);
-  //   const addUser = useCallback(
-  //     (user: User) => setUsers((users) => ({ ...users, user })),
-  //     []
-  //   );
+
   const addUser = useCallback(
     (user: string) =>
       setUsers((users) => ({

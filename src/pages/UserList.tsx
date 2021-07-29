@@ -1,25 +1,29 @@
-import React, { useEffect } from "react";
+import React, { FunctionComponent, HTMLProps, useCallback } from "react";
+import { v1 } from "uuid";
 import map from "lodash/map";
-import { useHistory } from "react-router-dom";
+import { Link, RouteComponentProps, useHistory } from "react-router-dom";
 import { useData } from "../core/Data";
-import "./UserList.css";
+import styled from "styled-components";
 
-function UserList() {
+interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
+
+const UserList: FunctionComponent<Props> = ({ className }) => {
   const history = useHistory();
-  const { addUser, users } = useData();
-  console.log(`users`, users);
-  useEffect(() => {
-    console.log(`prova`);
-    addUser("ciccio");
-  }, [addUser]);
+  const { users } = useData();
+  const goAdd = useCallback(() => history.push(`/create/${v1()}`), [history]);
 
   return (
-    <div>
+    <div className={className}>
+      <div>
+        <h2>User List</h2>
+        <Link to={`/create/${v1()}`}>Prova</Link>
+        <button onClick={goAdd}>+ Add</button>
+      </div>
       {map(users, (e) => (
         <div key={e.name}>{e.name}</div>
       ))}
     </div>
   );
-}
+};
 
-export default UserList;
+export default styled(UserList)``;
