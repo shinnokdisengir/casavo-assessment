@@ -8,7 +8,11 @@ const GlobalStyles = createGlobalStyle`
   #root {
     background-color: gainsboro;
     height: 100vh;
-    
+  }
+  .main-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
   }
 `;
 

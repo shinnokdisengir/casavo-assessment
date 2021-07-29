@@ -9,8 +9,8 @@ interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 const App: FunctionComponent<Props> = ({ className }) => (
   <div className={className}>
     <Switch>
-      <Route exact path="/create/:id" component={UserDetail} />
-      <Route exact path="/edit/:id" component={UserDetail} />
+      <Route exact path="/create/:name" component={UserDetail} />
+      <Route exact path="/edit/:name" component={UserDetail} />
       <Route exact path="/" component={UserList} />
       <Redirect
         to={{

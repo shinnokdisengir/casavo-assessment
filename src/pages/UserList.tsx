@@ -1,27 +1,33 @@
-import React, { FunctionComponent, HTMLProps, useCallback } from "react";
-import { v1 } from "uuid";
 import map from "lodash/map";
+import React, { FunctionComponent, HTMLProps, useCallback } from "react";
 import { Link, RouteComponentProps, useHistory } from "react-router-dom";
-import { useData } from "../core/Data";
 import styled from "styled-components";
+import { v1 } from "uuid";
+import { useData } from "../core/Data";
 
 interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 
 const UserList: FunctionComponent<Props> = ({ className }) => {
   const history = useHistory();
   const { users } = useData();
-  const goAdd = useCallback(() => history.push(`/create/${v1()}`), [history]);
+  const handleAdd = useCallback(
+    () => history.push(`/create/${v1()}`),
+    [history]
+  );
 
   return (
     <div className={className}>
       <div>
         <h2>User List</h2>
-        <Link to={`/create/${v1()}`}>Prova</Link>
-        <button onClick={goAdd}>+ Add</button>
+        {map(users, (_, name) => (
+          <div key={name}>
+            <Link to={`/edit/${name}`}>{name}</Link>
+          </div>
+        ))}
       </div>
-      {map(users, (e) => (
-        <div key={e.name}>{e.name}</div>
-      ))}
+      <button className="main-button" onClick={handleAdd}>
+        + Add user
+      </button>
     </div>
   );
 };

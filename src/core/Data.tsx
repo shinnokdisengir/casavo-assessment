@@ -11,18 +11,14 @@ import { f } from "../utilities";
 
 const SessionKey = "casavo.data";
 
-interface User {
-  name: string;
-  friends: Array<string>;
-}
+type User = Array<string>;
 
 interface Context {
   users: Users;
   checkUser: (name: string) => boolean;
   addUser: (name: string) => void;
+  updateUser: (name: string, friends: Array<string>) => void;
   removeUser: (name: string) => void;
-  addFriend: (user: string, friend: string) => void;
-  removeFriend: (user: string, friend: string) => void;
 }
 
 type Users = Record<string, User>;
@@ -31,14 +27,18 @@ const DataContext = createContext<Context>({
   users: {},
   checkUser: () => false,
   addUser: () => {},
-  addFriend: () => {},
-  removeFriend: () => {},
+  updateUser: () => {},
   removeUser: () => {},
 });
 const { Provider, Consumer } = DataContext;
 
 const DataProvider: FunctionComponent = ({ children }) => {
-  const [users, setUsers] = useState<Users>({});
+  const [users, setUsers] = useState<Users>({
+    pippo: [],
+    amico: ["pippo"],
+    dottore: ["pippo", "amico"],
+    leprecauno: [],
+  });
 
   const checkUser = useCallback((name: string) => !!users[name], [users]);
 
@@ -46,10 +46,7 @@ const DataProvider: FunctionComponent = ({ children }) => {
     (user: string) =>
       setUsers((users) => ({
         ...users,
-        [user]: {
-          name: user,
-          friends: [],
-        },
+        [user]: [],
       })),
     []
   );
@@ -58,28 +55,31 @@ const DataProvider: FunctionComponent = ({ children }) => {
     (user: string) => setUsers((users) => omit(users, user)),
     []
   );
-  const addFriend = useCallback(
-    (user: string, friend: string) =>
+
+  const updateUser = useCallback(
+    (user: string, friends: Array<string>) =>
       setUsers((users) => ({
         ...users,
-        [user]: {
-          ...users[user],
-          friends: users[user].friends.concat(friend),
-        },
+        [user]: friends,
       })),
     []
   );
-  const removeFriend = useCallback(
-    (user: string, friend: string) =>
-      setUsers((users) => ({
-        ...users,
-        [user]: {
-          ...users[user],
-          friends: users[user].friends.filter((f) => f !== friend),
-        },
-      })),
-    []
-  );
+  //   const addFriend = useCallback(
+  //     (user: string, friend: string) =>
+  //       setUsers((users) => ({
+  //         ...users,
+  //         [user]: users[user].concat(friend),
+  //       })),
+  //     []
+  //   );
+  //   const removeFriend = useCallback(
+  //     (user: string, friend: string) =>
+  //       setUsers((users) => ({
+  //         ...users,
+  //         [user]: users[user].filter((f) => f !== friend),
+  //       })),
+  //     []
+  //   );
 
   useEffect(() => {
     const session = localStorage.getItem(SessionKey);
@@ -90,8 +90,7 @@ const DataProvider: FunctionComponent = ({ children }) => {
     checkUser,
     addUser,
     removeUser,
-    addFriend,
-    removeFriend,
+    updateUser,
   };
 
   return (
