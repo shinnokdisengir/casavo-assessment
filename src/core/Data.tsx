@@ -16,12 +16,24 @@ interface User {
   friends: Array<string>;
 }
 
+interface Context {
+  users: Users;
+  checkUser: (name: string) => boolean;
+  addUser: (name: string) => void;
+  removeUser: (name: string) => void;
+  addFriend: (user: string, friend: string) => void;
+  removeFriend: (user: string, friend: string) => void;
+}
+
 type Users = Record<string, User>;
 
-const DataContext = createContext<{
-  users: Users;
-}>({
+const DataContext = createContext<Context>({
   users: {},
+  checkUser: () => false,
+  addUser: () => {},
+  addFriend: () => {},
+  removeFriend: () => {},
+  removeUser: () => {},
 });
 const { Provider, Consumer } = DataContext;
 
@@ -29,10 +41,22 @@ const DataProvider: FunctionComponent = ({ children }) => {
   const [users, setUsers] = useState<Users>({});
 
   const checkUser = useCallback((name: string) => !!users[name], [users]);
+  //   const addUser = useCallback(
+  //     (user: User) => setUsers((users) => ({ ...users, user })),
+  //     []
+  //   );
   const addUser = useCallback(
-    (user: User) => setUsers((users) => ({ ...users, user })),
+    (user: string) =>
+      setUsers((users) => ({
+        ...users,
+        [user]: {
+          name: user,
+          friends: [],
+        },
+      })),
     []
   );
+
   const removeUser = useCallback(
     (user: string) => setUsers((users) => omit(users, user)),
     []
