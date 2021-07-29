@@ -1,7 +1,10 @@
 import React, {
   FunctionComponent,
   HTMLProps,
+  RefObject,
   useCallback,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import keys from "lodash/keys";
@@ -15,23 +18,31 @@ interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 
 const UserDetail: FunctionComponent<Props> = ({ className }) => {
   const { addUser, updateUser, checkUser, users } = useData();
-  const { location, push, goBack } = useHistory();
+  const { location, push, goBack, replace } = useHistory();
   const isCreation = location.pathname.split("/")[1] === "create";
   const params = useParams() as any;
 
-  const [name, setName] = useState<string>(isCreation ? "" : params.name);
-  const [currentFriend, selectFriend] = useState<string>();
-  const [friends, setFriends] = useState<Array<string>>(
-    isCreation ? [] : users[params.name]
-  );
+  const [name, setName] = useState<string>("");
+  const [friends, setFriends] = useState<Array<string>>([]);
   const [error, setError] = useState<boolean>(false);
+
+  const selectElement = useRef() as RefObject<any>;
 
   const handleSave = useCallback(() => {
     if (error) return;
-    if (isCreation) addUser(name);
-    else updateUser(name, friends);
+    if (isCreation) addUser(name, friends);
+    else updateUser(params.name, name, friends);
     goBack();
-  }, [addUser, error, friends, goBack, isCreation, name, updateUser]);
+  }, [
+    addUser,
+    error,
+    friends,
+    goBack,
+    isCreation,
+    name,
+    params.name,
+    updateUser,
+  ]);
 
   const handleWriting = useCallback(
     (event) => {
@@ -41,20 +52,26 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
     [checkUser]
   );
 
-  const handleChangeFriend = useCallback((event) => {
-    selectFriend(event.target.value);
-  }, []);
-
   const handleSelectFriend = useCallback(() => {
+    const currentFriend =
+      selectElement && selectElement.current && selectElement.current.value;
+    console.log(`currentFriend`, currentFriend);
     if (!currentFriend) return;
     setFriends((old) => old.concat(currentFriend));
-  }, [currentFriend]);
+  }, []);
 
   const handleRemoveFriend = useCallback((name) => {
     setFriends((old) => old.filter((f) => f !== name));
   }, []);
 
   const handleCreateFriend = useCallback(() => push(`/create/${v1()}`), [push]);
+
+  useEffect(() => {
+    if (!isCreation && !users[params.name]) replace("/");
+
+    setName(!isCreation ? params.name : "");
+    setFriends(!isCreation ? users[params.name] : []);
+  }, [isCreation, params.name, replace, users]);
 
   return (
     <div className={className}>
@@ -74,9 +91,11 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
         <div>
           <button onClick={handleCreateFriend}>+ New friend</button>
         </div>
-        <select value={currentFriend} onChange={handleChangeFriend}>
+        <select ref={selectElement}>
           {difference(keys(users), friends, [params.name]).map((f) => (
-            <option key={f}>{f}</option>
+            <option key={f} value={f}>
+              {f}
+            </option>
           ))}
         </select>
         <div>

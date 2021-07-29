@@ -16,8 +16,12 @@ type User = Array<string>;
 interface Context {
   users: Users;
   checkUser: (name: string) => boolean;
-  addUser: (name: string) => void;
-  updateUser: (name: string, friends: Array<string>) => void;
+  addUser: (name: string, friends: Array<string>) => void;
+  updateUser: (
+    oldName: string,
+    newName: string,
+    friends: Array<string>
+  ) => void;
   removeUser: (name: string) => void;
 }
 
@@ -43,10 +47,10 @@ const DataProvider: FunctionComponent = ({ children }) => {
   const checkUser = useCallback((name: string) => !!users[name], [users]);
 
   const addUser = useCallback(
-    (user: string) =>
+    (user: string, friends: Array<string>) =>
       setUsers((users) => ({
         ...users,
-        [user]: [],
+        [user]: friends,
       })),
     []
   );
@@ -57,10 +61,10 @@ const DataProvider: FunctionComponent = ({ children }) => {
   );
 
   const updateUser = useCallback(
-    (user: string, friends: Array<string>) =>
+    (oldName: string, newName: string, friends: Array<string>) =>
       setUsers((users) => ({
-        ...users,
-        [user]: friends,
+        ...omit(users, oldName),
+        [newName]: friends,
       })),
     []
   );
