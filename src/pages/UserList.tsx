@@ -11,7 +11,7 @@ const UserList: FunctionComponent<Props> = ({ className }) => {
   const history = useHistory();
   const { users } = useData();
   const handleAdd = useCallback(
-    () => history.push(`/create/${v1()}`),
+    () => history.push(`/create/${v1()}`, []),
     [history]
   );
 
@@ -21,7 +21,14 @@ const UserList: FunctionComponent<Props> = ({ className }) => {
         <h2>User List</h2>
         {map(users, (_, name) => (
           <div key={name}>
-            <Link to={`/edit/${name}`}>{name}</Link>
+            <Link
+              to={{
+                pathname: `/edit/${name}`,
+                state: [],
+              }}
+            >
+              {name}
+            </Link>
           </div>
         ))}
       </div>
@@ -32,4 +39,8 @@ const UserList: FunctionComponent<Props> = ({ className }) => {
   );
 };
 
-export default styled(UserList)``;
+export default styled(UserList)`
+  transform: translate(
+    ${({ location }) => (location.state as Array<any>).length}px
+  );
+`;

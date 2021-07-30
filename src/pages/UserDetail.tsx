@@ -1,3 +1,5 @@
+import difference from "lodash/difference";
+import keys from "lodash/keys";
 import React, {
   FunctionComponent,
   HTMLProps,
@@ -7,12 +9,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import keys from "lodash/keys";
-import difference from "lodash/difference";
 import { RouteComponentProps, useHistory, useParams } from "react-router-dom";
-import { useData } from "../core/Data";
 import styled from "styled-components";
 import { v1 } from "uuid";
+import { useData } from "../core/Data";
 
 interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 
@@ -30,6 +30,7 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
 
   const handleSave = useCallback(() => {
     if (error) return;
+    if (!name) return;
     if (isCreation) addUser(name, friends);
     else updateUser(params.name, name, friends);
     goBack();
@@ -55,7 +56,6 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
   const handleSelectFriend = useCallback(() => {
     const currentFriend =
       selectElement && selectElement.current && selectElement.current.value;
-    console.log(`currentFriend`, currentFriend);
     if (!currentFriend) return;
     setFriends((old) => old.concat(currentFriend));
   }, []);
@@ -64,14 +64,24 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
     setFriends((old) => old.filter((f) => f !== name));
   }, []);
 
-  const handleCreateFriend = useCallback(() => push(`/create/${v1()}`), [push]);
+  const handleCreateFriend = useCallback(() => {
+    const sessionId = v1();
+    push(`/create/${sessionId}`, [
+      ...(location.state as any),
+      {
+        name,
+        friends,
+      },
+    ]);
+  }, [friends, location.state, name, push]);
 
   useEffect(() => {
-    if (!isCreation && !users[params.name]) replace("/");
-
+    if (!isCreation && !users[params.name]) replace("/", []);
     setName(!isCreation ? params.name : "");
     setFriends(!isCreation ? users[params.name] : []);
   }, [isCreation, params.name, replace, users]);
+
+  console.log(`location.state`, location.state);
 
   return (
     <div className={className}>

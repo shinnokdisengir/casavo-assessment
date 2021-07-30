@@ -9,6 +9,8 @@ import "./GlobalStyles";
 import GlobalStyles from "./GlobalStyles";
 
 const history = createHistory();
+if (!history.location.state)
+  history.replace({ ...history.location, state: [] });
 
 ReactDOM.render(
   <StrictMode>

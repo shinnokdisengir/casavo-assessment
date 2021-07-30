@@ -1,6 +1,7 @@
 import React, { FunctionComponent, HTMLProps } from "react";
 import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
 import styled from "styled-components";
+import CreateEditRoute from "./core/CreateEditRoute";
 import UserDetail from "./pages/UserDetail";
 import UserList from "./pages/UserList";
 
@@ -9,12 +10,13 @@ interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
 const App: FunctionComponent<Props> = ({ className }) => (
   <div className={className}>
     <Switch>
-      <Route exact path="/create/:name" component={UserDetail} />
-      <Route exact path="/edit/:name" component={UserDetail} />
+      <CreateEditRoute exact path="/create/:name" component={UserDetail} />
+      <CreateEditRoute exact path="/edit/:name" component={UserDetail} />
       <Route exact path="/" component={UserList} />
       <Redirect
         to={{
           pathname: "/",
+          state: [],
         }}
       />
     </Switch>

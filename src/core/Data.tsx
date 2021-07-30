@@ -11,7 +11,7 @@ import { f } from "../utilities";
 
 const SessionKey = "casavo.data";
 
-type User = Array<string>;
+export type User = Array<string>;
 
 interface Context {
   users: Users;
