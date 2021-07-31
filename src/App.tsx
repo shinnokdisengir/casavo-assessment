@@ -7,9 +7,7 @@ import React, {
 } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
-import StackNavigationProvider, {
-  useStackNavigation,
-} from "./core/StackNavigation";
+import { useStackNavigation } from "./core/StackNavigation";
 import UserList from "./pages/UserList";
 
 interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}

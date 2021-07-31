@@ -14,6 +14,11 @@ const GlobalStyles = createGlobalStyle`
     right: 8px;
     top: 8px;
   }
+
+  .error {
+    color: red;
+    font-size: smaller;
+  }
 `;
 
 export default GlobalStyles;

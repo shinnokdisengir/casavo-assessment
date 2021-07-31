@@ -5,12 +5,10 @@ import React, {
   HTMLProps,
   RefObject,
   useCallback,
-  useEffect,
   useRef,
   useState,
 } from "react";
 import styled from "styled-components";
-import { v1 } from "uuid";
 import { useData } from "../core/Data";
 import { useStackNavigation } from "../core/StackNavigation";
 
@@ -26,7 +24,7 @@ const UserDetail: FunctionComponent<Props> = ({
   name = "",
   friends = [],
 }) => {
-  const { stack, popPage, pushPage } = useStackNavigation();
+  const { popPage, pushPage } = useStackNavigation();
   const { addUser, updateUser, checkUser, users } = useData();
   const [editName, setEditName] = useState<string>(name);
   const [editFriends, setEditFriends] = useState<Array<string>>(friends);
@@ -36,7 +34,7 @@ const UserDetail: FunctionComponent<Props> = ({
 
   const handleSave = useCallback(() => {
     if (error) return;
-    if (!name) return;
+    if (!editName) return;
     if (isCreation) addUser(editName, editFriends);
     else updateUser(name, editName, editFriends);
     popPage();
@@ -74,20 +72,12 @@ const UserDetail: FunctionComponent<Props> = ({
     pushPage(<UserDetail isCreation name="" friends={[]} />);
   }, [pushPage]);
 
-  // useEffect(() => {
-  //   if (!isCreation && !users[params.name]) replace("/", []);
-  //   setEditName(!isCreation ? params.name : "");
-  //   setFriends(!isCreation ? users[params.name] : []);
-  // }, [isCreation, params.name, replace, users]);
-
-  // console.log(`location.state`, location.state);
-
   return (
     <div className={className}>
       <h2>{isCreation ? "New User" : "Edit User"}</h2>
       <div>
         <input
-          value={name}
+          value={editName}
           onChange={handleWriting}
           placeholder="User name"
         ></input>
@@ -101,7 +91,7 @@ const UserDetail: FunctionComponent<Props> = ({
           <button onClick={handleCreateFriend}>+ New friend</button>
         </div>
         <select ref={selectElement}>
-          {difference(keys(users), friends, [name]).map((f) => (
+          {difference(keys(users), editFriends, [name, editName]).map((f) => (
             <option key={f} value={f}>
               {f}
             </option>
@@ -111,7 +101,7 @@ const UserDetail: FunctionComponent<Props> = ({
           <button onClick={handleSelectFriend}>Select</button>
         </div>
       </div>
-      {friends.map((f) => (
+      {editFriends.map((f) => (
         <div key={f}>
           <div>
             {f}
@@ -126,9 +116,4 @@ const UserDetail: FunctionComponent<Props> = ({
   );
 };
 
-export default styled(UserDetail)`
-  .error {
-    color: red;
-    font-size: smaller;
-  }
-`;
+export default styled(UserDetail)``;
