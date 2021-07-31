@@ -9,21 +9,27 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { RouteComponentProps, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { v1 } from "uuid";
 import { useData } from "../core/Data";
+import { useStackNavigation } from "../core/StackNavigation";
 
-interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
+interface Props extends HTMLProps<HTMLDivElement> {
+  isCreation?: boolean;
+  name?: string;
+  friends?: Array<string>;
+}
 
-const UserDetail: FunctionComponent<Props> = ({ className }) => {
+const UserDetail: FunctionComponent<Props> = ({
+  className,
+  isCreation = false,
+  name = "",
+  friends = [],
+}) => {
+  const { stack, popPage, pushPage } = useStackNavigation();
   const { addUser, updateUser, checkUser, users } = useData();
-  const { location, push, goBack, replace } = useHistory();
-  const isCreation = location.pathname.split("/")[1] === "create";
-  const params = useParams() as any;
-
-  const [name, setName] = useState<string>("");
-  const [friends, setFriends] = useState<Array<string>>([]);
+  const [editName, setEditName] = useState<string>(name);
+  const [editFriends, setEditFriends] = useState<Array<string>>(friends);
   const [error, setError] = useState<boolean>(false);
 
   const selectElement = useRef() as RefObject<any>;
@@ -31,24 +37,24 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
   const handleSave = useCallback(() => {
     if (error) return;
     if (!name) return;
-    if (isCreation) addUser(name, friends);
-    else updateUser(params.name, name, friends);
-    goBack();
+    if (isCreation) addUser(editName, editFriends);
+    else updateUser(name, editName, editFriends);
+    popPage();
   }, [
     addUser,
+    editFriends,
+    editName,
     error,
-    friends,
-    goBack,
     isCreation,
     name,
-    params.name,
+    popPage,
     updateUser,
   ]);
 
   const handleWriting = useCallback(
     (event) => {
       setError(checkUser(event.target.value));
-      setName(event.target.value);
+      setEditName(event.target.value);
     },
     [checkUser]
   );
@@ -57,31 +63,24 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
     const currentFriend =
       selectElement && selectElement.current && selectElement.current.value;
     if (!currentFriend) return;
-    setFriends((old) => old.concat(currentFriend));
+    setEditFriends((old) => old.concat(currentFriend));
   }, []);
 
   const handleRemoveFriend = useCallback((name) => {
-    setFriends((old) => old.filter((f) => f !== name));
+    setEditFriends((old) => old.filter((f) => f !== name));
   }, []);
 
   const handleCreateFriend = useCallback(() => {
-    const sessionId = v1();
-    push(`/create/${sessionId}`, [
-      ...(location.state as any),
-      {
-        name,
-        friends,
-      },
-    ]);
-  }, [friends, location.state, name, push]);
+    pushPage(<UserDetail isCreation name="" friends={[]} />);
+  }, [pushPage]);
 
-  useEffect(() => {
-    if (!isCreation && !users[params.name]) replace("/", []);
-    setName(!isCreation ? params.name : "");
-    setFriends(!isCreation ? users[params.name] : []);
-  }, [isCreation, params.name, replace, users]);
+  // useEffect(() => {
+  //   if (!isCreation && !users[params.name]) replace("/", []);
+  //   setEditName(!isCreation ? params.name : "");
+  //   setFriends(!isCreation ? users[params.name] : []);
+  // }, [isCreation, params.name, replace, users]);
 
-  console.log(`location.state`, location.state);
+  // console.log(`location.state`, location.state);
 
   return (
     <div className={className}>
@@ -102,7 +101,7 @@ const UserDetail: FunctionComponent<Props> = ({ className }) => {
           <button onClick={handleCreateFriend}>+ New friend</button>
         </div>
         <select ref={selectElement}>
-          {difference(keys(users), friends, [params.name]).map((f) => (
+          {difference(keys(users), friends, [name]).map((f) => (
             <option key={f} value={f}>
               {f}
             </option>

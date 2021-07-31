@@ -7,6 +7,7 @@ import DataProvider from "./core/Data";
 import reportWebVitals from "./reportWebVitals";
 import "./GlobalStyles";
 import GlobalStyles from "./GlobalStyles";
+import StackNavigationProvider from "./core/StackNavigation";
 
 const history = createHistory();
 if (!history.location.state)
@@ -16,9 +17,11 @@ ReactDOM.render(
   <StrictMode>
     <GlobalStyles />
     <DataProvider>
-      <Router history={history}>
-        <Route component={App} />
-      </Router>
+      <StackNavigationProvider>
+        <Router history={history}>
+          <Route component={App} />
+        </Router>
+      </StackNavigationProvider>
     </DataProvider>
   </StrictMode>,
   document.getElementById("root")

@@ -1,18 +1,26 @@
 import map from "lodash/map";
 import React, { FunctionComponent, HTMLProps, useCallback } from "react";
-import { Link, RouteComponentProps, useHistory } from "react-router-dom";
+// import { Link, RouteComponentProps, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import { v1 } from "uuid";
 import { useData } from "../core/Data";
+import { useStackNavigation } from "../core/StackNavigation";
+import UserDetail from "./UserDetail";
 
-interface Props extends HTMLProps<HTMLDivElement>, RouteComponentProps {}
+interface Props extends HTMLProps<HTMLDivElement> {}
 
 const UserList: FunctionComponent<Props> = ({ className }) => {
-  const history = useHistory();
+  // const history = useHistory();
   const { users } = useData();
-  const handleAdd = useCallback(
-    () => history.push(`/create/${v1()}`, []),
-    [history]
+  const { pushPage } = useStackNavigation();
+  const handleAdd = useCallback(() => {
+    pushPage(<UserDetail isCreation />);
+  }, [pushPage]);
+
+  const handleEdit = useCallback(
+    (name) => {
+      pushPage(<UserDetail name={name} friends={users[name]} />);
+    },
+    [pushPage, users]
   );
 
   return (
@@ -21,14 +29,15 @@ const UserList: FunctionComponent<Props> = ({ className }) => {
         <h2>User List</h2>
         {map(users, (_, name) => (
           <div key={name}>
-            <Link
-              to={{
-                pathname: `/edit/${name}`,
-                state: [],
+            <a
+              href="about:blank"
+              onClick={(e) => {
+                e.preventDefault();
+                handleEdit(name);
               }}
             >
               {name}
-            </Link>
+            </a>
           </div>
         ))}
       </div>
@@ -39,8 +48,4 @@ const UserList: FunctionComponent<Props> = ({ className }) => {
   );
 };
 
-export default styled(UserList)`
-  transform: translate(
-    ${({ location }) => (location.state as Array<any>).length}px
-  );
-`;
+export default styled(UserList)``;
