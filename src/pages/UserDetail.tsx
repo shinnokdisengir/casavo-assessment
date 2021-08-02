@@ -1,5 +1,6 @@
 import difference from "lodash/difference";
 import keys from "lodash/keys";
+import random from "lodash/random";
 import React, {
   FunctionComponent,
   HTMLProps,
@@ -29,12 +30,24 @@ const UserDetail: FunctionComponent<Props> = ({
   const [editName, setEditName] = useState<string>(name);
   const [editFriends, setEditFriends] = useState<Array<string>>(friends);
   const [error, setError] = useState<boolean>(false);
+  const [fails, setFails] = useState<number>(0);
 
   const selectElement = useRef() as RefObject<any>;
 
   const handleSave = useCallback(() => {
     if (error) return;
     if (!editName) return;
+    // Random errors
+    const rnd = random(5);
+    const f = rnd === 0 ? fails + 1 : 0;
+    setFails(f);
+    if (f > 1) {
+      window.alert("Something wrong, please retry");
+      return;
+    }
+    if (f) return;
+
+    // Finish commit
     if (isCreation) addUser(editName, editFriends);
     else updateUser(name, editName, editFriends);
     popPage();
@@ -43,6 +56,7 @@ const UserDetail: FunctionComponent<Props> = ({
     editFriends,
     editName,
     error,
+    fails,
     isCreation,
     name,
     popPage,
