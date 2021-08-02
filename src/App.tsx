@@ -49,16 +49,23 @@ const App: FunctionComponent<Props> = ({ className }) => {
 
 const StyledApp = styled(App)`
   .container {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    background: #fff;
+    padding: 2px 36px;
     padding: 8px 16px;
     background-color: white;
-    border: 1px solid grey;
-    border-radius: 4px;
+    border-radius: 8px;
     margin: auto;
     width: 300px;
     height: 400px;
     overflow-y: auto;
     position: absolute;
     top: calc(50% - 200px);
+  }
+
+  .container:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   }
 `;
 

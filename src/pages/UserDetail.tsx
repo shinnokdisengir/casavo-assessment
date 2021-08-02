@@ -104,23 +104,22 @@ const UserDetail: FunctionComponent<Props> = ({
         <div>
           <button onClick={handleCreateFriend}>+ New friend</button>
         </div>
-        <select ref={selectElement}>
-          {difference(keys(users), editFriends, [name, editName]).map((f) => (
-            <option key={f} value={f}>
-              {f}
-            </option>
-          ))}
-        </select>
-        <div>
+        <div className="row">
+          <select ref={selectElement}>
+            {difference(keys(users), editFriends, [name, editName]).map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+
           <button onClick={handleSelectFriend}>Select</button>
         </div>
       </div>
       {editFriends.map((f) => (
-        <div key={f}>
-          <div>
-            {f}
-            <button onClick={() => handleRemoveFriend(f)}>-</button>
-          </div>
+        <div className="row" key={f}>
+          <span>{f}</span>
+          <button onClick={() => handleRemoveFriend(f)}>-</button>
         </div>
       ))}
       <button className="main-button" onClick={handleSave}>
